@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - My Projects</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        .profile-section {
+            margin-bottom: 30px;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255,255,255,0.3);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        /* Edit Mode Button */
+        .edit-mode-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .edit-mode-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .edit-mode-btn.active {
+            background: #f5576c;
+            border-color: #f5576c;
+        }
+
+        /* Projects Grid */
+        .projects-section {
+            margin-top: 40px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 40px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .project-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+        }
+
+        .project-content {
+            padding: 25px;
+        }
+
+        .project-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .project-desc {
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .view-details {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .view-details:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Project Detail Page */
+        .detail-page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .detail-page.active {
+            display: block;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+
+        .detail-container {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .detail-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .detail-title {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .detail-subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .detail-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .detail-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+
+        .detail-section {
+            margin: 30px 0;
+        }
+
+        .detail-section h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+
+        .detail-section p, .detail-section ul {
+            line-height: 1.8;
+            opacity: 0.95;
+        }
+
+        .detail-section ul {
+            list-style-position: inside;
+            margin-left: 20px;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tech-tag {
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.95em;
+        }
+
+        /* Edit Form */
+        .edit-form {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .edit-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 1em;
+            font-family: inherit;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .image-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .image-input-group input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .upload-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .upload-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-img {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .save-btn {
+            padding: 12px 30px;
+            background: #f5576c;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            background: #d63d52;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .detail-title { font-size: 1.8em; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .detail-container { padding: 20px; }
+        }
+
+        /* Editable indicator */
+        .editable {
+            position: relative;
+            cursor: text;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .editable:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .editable::after {
+            content: '✏️';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 0.8em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .edit-mode .editable::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <button class="edit-mode-btn" onclick="toggleEditMode()">🔧 โหมดแก้ไข</button>
+
+    <!-- Home Page -->
+    <div id="homePage" class="container">
+        <header>
+            <div class="profile-section">
+                <img src="https://via.placeholder.com/150" alt="Profile" class="profile-img" id="profileImg">
+                <div class="edit-form" id="profileEditForm">
+                    <div class="form-group">
+                        <label>รูปโปรไฟล์:</label>
+                        <div class="image-input-group">
+                            <input type="text" id="profileImgUrl" placeholder="หรือใส่ URL รูป">
+                            <label for="profileImgFile" class="upload-btn">📁 เลือกรูป</label>
+                            <input type="file" id="profileImgFile" class="file-input" accept="image/*" onchange="handleProfileUpload(event)">
+                        </div>
+                        <img id="profilePreview" class="preview-img" style="display:none;">
+                    </div>
+                    <button class="save-btn" onclick="updateProfileImg()">บันทึกรูป</button>
+                </div>
+            </div>
+            <h1 class="editable" contenteditable="false" id="mainName">Your Name</h1>
+            <p class="subtitle editable" contenteditable="false" id="mainSubtitle">Web Developer | Designer | Creator</p>
+        </header>
+
+        <section class="projects-section">
+            <h2 class="section-title">📂 ผลงานของฉัน</h2>
+            <div class="projects-grid" id="projectsGrid"></div>
+        </section>
+    </div>
+
+    <!-- Detail Pages (will be generated dynamically) -->
+    <div id="detailPages"></div>
+
+    <script>
+        let editMode = false;
+        
+        // Default project data
+        let projects = [
+            {
+                id: 1,
+                title: "Security Monitor Pro",
+                shortDesc: "ระบบตรวจสอบความปลอดภัยแบบเรียลไทม์",
+                icon: "🔒",
+                mainImg: "https://via.placeholder.com/800x400",
+                images: [
+                    "https://via.placeholder.com/400x300",
+                    "https://via.placeholder.com/400x300",
+                    "https://via.placeholder.com/400x300"
+                ],
+                description: "ระบบตรวจสอบและติดตามความปลอดภัยแบบครบวงจร ที่สามารถตรวจจับภัยคุกคามได้แบบเรียลไทม์",
+                features: [
+                    "ตรวจจับการบุกรุกแบบเรียลไทม์",
+                    "แจ้งเตือนผ่านหลายช่องทาง",
+                    "บันทึกและวิเคราะห์ข้อมูล",
+                    "รองรับกล้อง IP หลายตัว"
+                ],
+                techStack: ["Python", "OpenCV", "TensorFlow", "React", "Node.js"],
+                challenges: "การพัฒนา AI ให้ตรวจจับได้แม่นยำและลดการแจ้งเตือนผิดพลาด",
+                results: "เพิ่มความปลอดภัยได้ 95% และลดเวลาตอบสนองเหตุการณ์ลง 70%"
+            },
+            {
+                id: 2,
+                title: "E-Commerce Platform",
+                shortDesc: "แพลตฟอร์มขายสินค้าออนไลน์",
+                icon: "🛒",
+                mainImg: "https://via.placeholder.com/800x400",
+                images: [
+                    "https://via.placeholder.com/400x300",
+                    "https://via.placeholder.com/400x300",
+                    "https://via.placeholder.com/400x300"
+                ],
+                description: "แพลตฟอร์มอีคอมเมิร์ซที่ครบครันด้วยระบบจัดการสินค้า การชำระเงิน และการจัดส่ง",
+                features: [
+                    "ระบบตะกร้าสินค้าที่ใช้งานง่าย",
+                    "ชำระเงินผ่านหลายช่องทาง",
+                    "ระบบจัดการคำสั่งซื้อ",
+                    "Dashboard สำหรับผู้ขาย"
+                ],
+                techStack: ["Next.js", "Stripe", "PostgreSQL", "AWS", "Redis"],
+                challenges: "การจัดการ transaction ที่ปลอดภัยและรองรับผู้ใช้จำนวนมากพร้อมกัน",
+                results: "รองรับการทำธุรกรรม 10,000+ รายการต่อวัน ด้วยความเสถียร 99.9%"
+            },
+            {
+                id: 3,
+                title: "Task Management App",
+                shortDesc: "แอปจัดการงานและทีม",
+                icon: "✅",
+                mainImg: "https://via.placeholder.com/800x400",
+                images: [
+                    "https://via.placeholder.com/400x300",
+                    "https://via.placeholder.com/400x300",
+                    "https://via.placeholder.com/400x300"
+                ],
+                description: "แอปพลิเคชันจัดการโปรเจกต์และทีมงาน ที่ช่วยให้การทำงานมีประสิทธิภาพมากขึ้น",
+                features: [
+                    "จัดการ task แบบ Kanban board",
+                    "แชทและแชร์ไฟล์ภายในทีม",
+                    "ตั้งเวลาและแจ้งเตือน",
+                    "รายงานความคืบหน้าโปรเจกต์"
+                ],
+                techStack: ["Vue.js", "Firebase", "Vuetify", "Cloud Functions"],
+                challenges: "การ sync ข้อมูลแบบ real-time ให้ทุกคนในทีมเห็นข้อมูลตรงกัน",
+                results: "ช่วยเพิ่มประสิทธิภาพการทำงานของทีม 45% และลดเวลาประชุมลง 30%"
+            }
+        ];
+
+        // Load saved data
+        function loadData() {
+            const saved = localStorage.getItem('portfolioData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                projects = data.projects || projects;
+                document.getElementById('mainName').textContent = data.name || 'Your Name';
+                document.getElementById('mainSubtitle').textContent = data.subtitle || 'Web Developer | Designer | Creator';
+                document.getElementById('profileImg').src = data.profileImg || 'https://via.placeholder.com/150';
+            }
+        }
+
+        // Save data
+        function saveData() {
+            const data = {
+                name: document.getElementById('mainName').textContent,
+                subtitle: document.getElementById('mainSubtitle').textContent,
+                profileImg: document.getElementById('profileImg').src,
+                projects: projects
+            };
+            localStorage.setItem('portfolioData', JSON.stringify(data));
+        }
+
+        // Toggle edit mode
+        function toggleEditMode() {
+            editMode = !editMode;
+            const btn = document.querySelector('.edit-mode-btn');
+            const editables = document.querySelectorAll('.editable');
+            
+            if (editMode) {
+                btn.classList.add('active');
+                btn.textContent = '💾 บันทึก';
+                document.body.classList.add('edit-mode');
+                editables.forEach(el => el.setAttribute('contenteditable', 'true'));
+                document.getElementById('profileEditForm').classList.add('active');
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '🔧 โหมดแก้ไข';
+                document.body.classList.remove('edit-mode');
+                editables.forEach(el => el.setAttribute('contenteditable', 'false'));
+                document.getElementById('profileEditForm').classList.remove('active');
+                saveData();
+                alert('✅ บันทึกข้อมูลเรียบร้อย!');
+            }
+        }
+
+        // Update profile image
+        function updateProfileImg() {
+            const url = document.getElementById('profileImgUrl').value;
+            if (url) {
+                document.getElementById('profileImg').src = url;
+                alert('✅ อัปเดตรูปโปรไฟล์แล้ว!');
+            }
+        }
+
+        // Handle profile image upload
+        function handleProfileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgData = e.target.result;
+                    document.getElementById('profileImg').src = imgData;
+                    document.getElementById('profileImgUrl').value = imgData;
+                    
+                    // Show preview
+                    const preview = document.getElementById('profilePreview');
+                    preview.src = imgData;
+                    preview.style.display = 'block';
+                    
+                    alert('✅ อัปโหลดรูปสำเร็จ! อย่าลืมกดบันทึก');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Handle project image upload
+        function handleImageUpload(event, projectId, imageType) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgData = e.target.result;
+                    
+                    if (imageType === 'main') {
+                        document.getElementById(`mainImg${projectId}`).value = imgData;
+                    } else {
+                        document.getElementById(`img${imageType}_${projectId}`).value = imgData;
+                    }
+                    
+                    alert('✅ อัปโหลดรูปสำเร็จ! อย่าลืมกดบันทึกรูปภาพ');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Render projects
+        function renderProjects() {
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = projects.map(project => `
+                <div class="project-card" onclick="showDetail(${project.id})">
+                    <div class="project-image">
+                        ${project.icon}
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">${project.title}</h3>
+                        <p class="project-desc">${project.shortDesc}</p>
+                        <span class="view-details">ดูรายละเอียด →</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render detail pages
+        function renderDetailPages() {
+            const container = document.getElementById('detailPages');
+            container.innerHTML = projects.map(project => `
+                <div id="detail${project.id}" class="detail-page container">
+                    <button class="back-btn" onclick="showHome()">← กลับหน้าหลัก</button>
+                    
+                    <div class="detail-container">
+                        <div class="detail-header">
+                            <h1 class="detail-title">${project.title}</h1>
+                            <p class="detail-subtitle">${project.shortDesc}</p>
+                        </div>
+
+                        ${editMode ? `
+                        <div class="edit-form active">
+                            <div class="form-group">
+                                <label>รูปหลักโปรเจกต์:</label>
+                                <div class="image-input-group">
+                                    <input type="text" id="mainImg${project.id}" value="${project.mainImg}" placeholder="หรือใส่ URL">
+                                    <label for="mainImgFile${project.id}" class="upload-btn">📁 เลือกรูป</label>
+                                    <input type="file" id="mainImgFile${project.id}" class="file-input" accept="image/*" onchange="handleImageUpload(event, ${project.id}, 'main')">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>รูปประกอบที่ 1:</label>
+                                <div class="image-input-group">
+                                    <input type="text" id="img1_${project.id}" value="${project.images[0]}" placeholder="หรือใส่ URL">
+                                    <label for="img1File${project.id}" class="upload-btn">📁 เลือกรูป</label>
+                                    <input type="file" id="img1File${project.id}" class="file-input" accept="image/*" onchange="handleImageUpload(event, ${project.id}, 1)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>รูปประกอบที่ 2:</label>
+                                <div class="image-input-group">
+                                    <input type="text" id="img2_${project.id}" value="${project.images[1]}" placeholder="หรือใส่ URL">
+                                    <label for="img2File${project.id}" class="upload-btn">📁 เลือกรูป</label>
+                                    <input type="file" id="img2File${project.id}" class="file-input" accept="image/*" onchange="handleImageUpload(event, ${project.id}, 2)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>รูปประกอบที่ 3:</label>
+                                <div class="image-input-group">
+                                    <input type="text" id="img3_${project.id}" value="${project.images[2]}" placeholder="หรือใส่ URL">
+                                    <label for="img3File${project.id}" class="upload-btn">📁 เลือกรูป</label>
+                                    <input type="file" id="img3File${project.id}" class="file-input" accept="image/*" onchange="handleImageUpload(event, ${project.id}, 3)">
+                                </div>
+                            </div>
+                            <button class="save-btn" onclick="updateProjectImages(${project.id})">บันทึกรูปภาพ</button>
+                        </div>
+                        ` : ''}
+
+                        <div class="detail-images">
+                            <img src="${project.images[0]}" alt="Screenshot 1" class="detail-img">
+                            <img src="${project.images[1]}" alt="Screenshot 2" class="detail-img">
+                            <img src="${project.images[2]}" alt="Screenshot 3" class="detail-img">
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>📝 เกี่ยวกับโปรเจกต์</h3>
+                            <p class="editable" contenteditable="${editMode}" id="desc${project.id}">${project.description}</p>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>✨ ฟีเจอร์หลัก</h3>
+                            <ul>
+                                ${project.features.map(f => `<li>${f}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>🛠️ เทคโนโลยีที่ใช้</h3>
+                            <div class="tech-stack">
+                                ${project.techStack.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>🎯 ความท้าทาย</h3>
+                            <p class="editable" contenteditable="${editMode}" id="challenges${project.id}">${project.challenges}</p>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>🏆 ผลลัพธ์</h3>
+                            <p class="editable" contenteditable="${editMode}" id="results${project.id}">${project.results}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update project images
+        function updateProjectImages(id) {
+            const project = projects.find(p => p.id === id);
+            project.mainImg = document.getElementById(`mainImg${id}`).value;
+            project.images[0] = document.getElementById(`img1_${id}`).value;
+            project.images[1] = document.getElementById(`img2_${id}`).value;
+            project.images[2] = document.getElementById(`img3_${id}`).value;
+            saveData();
+            renderDetailPages();
+            showDetail(id);
+            alert('✅ อัปเดตรูปภาพแล้ว!');
+        }
+
+        // Show detail page
+        function showDetail(id) {
+            // Save any edited content first
+            if (editMode) {
+                const project = projects.find(p => p.id === id);
+                if (project) {
+                    const descEl = document.getElementById(`desc${id}`);
+                    const challengesEl = document.getElementById(`challenges${id}`);
+                    const resultsEl = document.getElementById(`results${id}`);
+                    if (descEl) project.description = descEl.textContent;
+                    if (challengesEl) project.challenges = challengesEl.textContent;
+                    if (resultsEl) project.results = resultsEl.textContent;
+                }
+            }
+            
+            document.getElementById('homePage').style.display = 'none';
+            document.querySelectorAll('.detail-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`detail${id}`).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Show home page
+        function showHome() {
+            document.getElementById('homePage').style.display = 'block';
+            document.querySelectorAll('.detail-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            window.scrollTo(0, 0);
+        }
+
+        // Initialize
+        loadData();
+        renderProjects();
+        renderDetailPages();
+    </script>
+</body>
+</html>
