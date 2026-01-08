@@ -321,6 +321,47 @@
             transform: scale(1.05);
         }
 
+        .upload-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .upload-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .image-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .image-input-group input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .preview-img {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
         .editable {
             position: relative;
             cursor: text;
@@ -354,6 +395,18 @@
         <header>
             <div class="profile-section">
                 <img src="https://via.placeholder.com/150" alt="Profile" class="profile-img" id="profileImg">
+                <div class="edit-form" id="profileEditForm">
+                    <div class="form-group">
+                        <label>รูปโปรไฟล์:</label>
+                        <div class="image-input-group">
+                            <input type="text" id="profileImgUrl" placeholder="หรือใส่ URL รูป">
+                            <label for="profileImgFile" class="upload-btn">📁 เลือกรูป</label>
+                            <input type="file" id="profileImgFile" class="file-input" accept="image/*" onchange="handleProfileUpload(event)">
+                        </div>
+                        <img id="profilePreview" class="preview-img" style="display:none;">
+                    </div>
+                    <button class="save-btn" onclick="updateProfileImg()">บันทึกรูป</button>
+                </div>
             </div>
             <h1 class="editable" contenteditable="false" id="mainName">Your Name</h1>
             <p class="subtitle editable" contenteditable="false" id="mainSubtitle">Web Developer | Designer | Creator</p>
@@ -470,11 +523,13 @@
                 btn.textContent = '💾 บันทึก';
                 document.body.classList.add('edit-mode');
                 editables.forEach(el => el.setAttribute('contenteditable', 'true'));
+                document.getElementById('profileEditForm').classList.add('active');
             } else {
                 btn.classList.remove('active');
                 btn.textContent = '🔧 โหมดแก้ไข';
                 document.body.classList.remove('edit-mode');
                 editables.forEach(el => el.setAttribute('contenteditable', 'false'));
+                document.getElementById('profileEditForm').classList.remove('active');
                 
                 saveCurrentPageContent();
                 saveData();
@@ -487,6 +542,53 @@
             if (activePage) {
                 const id = parseInt(activePage.id.replace('detail', ''));
                 showDetail(id);
+            }
+        }
+
+        function updateProfileImg() {
+            const url = document.getElementById('profileImgUrl').value;
+            if (url) {
+                document.getElementById('profileImg').src = url;
+                saveData();
+                alert('✅ อัปเดตรูปโปรไฟล์แล้ว!');
+            }
+        }
+
+        function handleProfileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgData = e.target.result;
+                    document.getElementById('profileImg').src = imgData;
+                    document.getElementById('profileImgUrl').value = imgData;
+                    
+                    const preview = document.getElementById('profilePreview');
+                    preview.src = imgData;
+                    preview.style.display = 'block';
+                    
+                    alert('✅ อัปโหลดรูปสำเร็จ! กดบันทึกรูปเพื่อยืนยัน');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleImageUpload(event, projectId, imageType) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgData = e.target.result;
+                    
+                    if (imageType === 'main') {
+                        document.getElementById(`mainImg${projectId}`).value = imgData;
+                    } else {
+                        document.getElementById(`img${imageType}_${projectId}`).value = imgData;
+                    }
+                    
+                    alert('✅ อัปโหลดรูปสำเร็จ! กดบันทึกรูปภาพเพื่อยืนยัน');
+                };
+                reader.readAsDataURL(file);
             }
         }
 
@@ -525,19 +627,35 @@
                             <h3 style="margin-bottom: 15px;">แก้ไขรูปภาพ</h3>
                             <div class="form-group">
                                 <label>รูปหลักโปรเจกต์:</label>
-                                <input type="text" id="mainImg${project.id}" value="${project.mainImg}" placeholder="URL รูปหลัก">
+                                <div class="image-input-group">
+                                    <input type="text" id="mainImg${project.id}" value="${project.mainImg}" placeholder="URL รูปหลัก">
+                                    <label for="mainImgFile${project.id}" class="upload-btn">📁 เลือกรูป</label>
+                                    <input type="file" id="mainImgFile${project.id}" class="file-input" accept="image/*" onchange="handleImageUpload(event, ${project.id}, 'main')">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>รูปประกอบที่ 1:</label>
-                                <input type="text" id="img1_${project.id}" value="${project.images[0]}" placeholder="URL รูปที่ 1">
+                                <div class="image-input-group">
+                                    <input type="text" id="img1_${project.id}" value="${project.images[0]}" placeholder="URL รูปที่ 1">
+                                    <label for="img1File${project.id}" class="upload-btn">📁 เลือกรูป</label>
+                                    <input type="file" id="img1File${project.id}" class="file-input" accept="image/*" onchange="handleImageUpload(event, ${project.id}, 1)">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>รูปประกอบที่ 2:</label>
-                                <input type="text" id="img2_${project.id}" value="${project.images[1]}" placeholder="URL รูปที่ 2">
+                                <div class="image-input-group">
+                                    <input type="text" id="img2_${project.id}" value="${project.images[1]}" placeholder="URL รูปที่ 2">
+                                    <label for="img2File${project.id}" class="upload-btn">📁 เลือกรูป</label>
+                                    <input type="file" id="img2File${project.id}" class="file-input" accept="image/*" onchange="handleImageUpload(event, ${project.id}, 2)">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>รูปประกอบที่ 3:</label>
-                                <input type="text" id="img3_${project.id}" value="${project.images[2]}" placeholder="URL รูปที่ 3">
+                                <div class="image-input-group">
+                                    <input type="text" id="img3_${project.id}" value="${project.images[2]}" placeholder="URL รูปที่ 3">
+                                    <label for="img3File${project.id}" class="upload-btn">📁 เลือกรูป</label>
+                                    <input type="file" id="img3File${project.id}" class="file-input" accept="image/*" onchange="handleImageUpload(event, ${project.id}, 3)">
+                                </div>
                             </div>
                             <button class="save-btn" onclick="updateProjectImages(${project.id})">บันทึกรูปภาพ</button>
                         </div>
