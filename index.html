@@ -542,12 +542,25 @@
                 document.body.classList.add('edit-mode');
                 editables.forEach(el => el.setAttribute('contenteditable', 'true'));
                 document.getElementById('profileEditForm').classList.add('active');
+                
+                // Show all edit forms in detail pages
+                document.querySelectorAll('.detail-page .edit-form').forEach(form => {
+                    form.classList.add('active');
+                });
             } else {
                 btn.classList.remove('active');
                 btn.textContent = '🔧 โหมดแก้ไข';
                 document.body.classList.remove('edit-mode');
                 editables.forEach(el => el.setAttribute('contenteditable', 'false'));
                 document.getElementById('profileEditForm').classList.remove('active');
+                
+                // Hide all edit forms in detail pages
+                document.querySelectorAll('.detail-page .edit-form').forEach(form => {
+                    form.classList.remove('active');
+                });
+                
+                // Save content before closing edit mode
+                saveCurrentPageContent();
                 saveData();
                 alert('✅ บันทึกข้อมูลเรียบร้อย!');
             }
@@ -713,13 +726,22 @@
         // Update project images
         function updateProjectImages(id) {
             const project = projects.find(p => p.id === id);
-            project.mainImg = document.getElementById(`mainImg${id}`).value;
-            project.images[0] = document.getElementById(`img1_${id}`).value;
-            project.images[1] = document.getElementById(`img2_${id}`).value;
-            project.images[2] = document.getElementById(`img3_${id}`).value;
+            const mainImgInput = document.getElementById(`mainImg${id}`);
+            const img1Input = document.getElementById(`img1_${id}`);
+            const img2Input = document.getElementById(`img2_${id}`);
+            const img3Input = document.getElementById(`img3_${id}`);
+            
+            if (mainImgInput) project.mainImg = mainImgInput.value;
+            if (img1Input) project.images[0] = img1Input.value;
+            if (img2Input) project.images[1] = img2Input.value;
+            if (img3Input) project.images[2] = img3Input.value;
+            
             saveData();
+            
+            // Re-render the detail page to show updated images
             renderDetailPages();
             showDetail(id);
+            
             alert('✅ อัปเดตรูปภาพแล้ว!');
         }
 
@@ -727,27 +749,46 @@
         function showDetail(id) {
             // Save any edited content first
             if (editMode) {
-                const project = projects.find(p => p.id === id);
-                if (project) {
-                    const descEl = document.getElementById(`desc${id}`);
-                    const challengesEl = document.getElementById(`challenges${id}`);
-                    const resultsEl = document.getElementById(`results${id}`);
-                    if (descEl) project.description = descEl.textContent;
-                    if (challengesEl) project.challenges = challengesEl.textContent;
-                    if (resultsEl) project.results = resultsEl.textContent;
-                }
+                saveCurrentPageContent();
             }
             
             document.getElementById('homePage').style.display = 'none';
             document.querySelectorAll('.detail-page').forEach(page => {
                 page.classList.remove('active');
             });
+            
+            // Re-render to apply edit mode if active
+            renderDetailPages();
             document.getElementById(`detail${id}`).classList.add('active');
+            
+            // Re-apply edit mode if it was active
+            if (editMode) {
+                const editables = document.querySelectorAll(`#detail${id} .editable`);
+                editables.forEach(el => el.setAttribute('contenteditable', 'true'));
+            }
+            
             window.scrollTo(0, 0);
+        }
+        
+        // Save content from current page
+        function saveCurrentPageContent() {
+            projects.forEach(project => {
+                const descEl = document.getElementById(`desc${project.id}`);
+                const challengesEl = document.getElementById(`challenges${project.id}`);
+                const resultsEl = document.getElementById(`results${project.id}`);
+                if (descEl) project.description = descEl.textContent;
+                if (challengesEl) project.challenges = challengesEl.textContent;
+                if (resultsEl) project.results = resultsEl.textContent;
+            });
         }
 
         // Show home page
         function showHome() {
+            // Save any edited content first
+            if (editMode) {
+                saveCurrentPageContent();
+            }
+            
             document.getElementById('homePage').style.display = 'block';
             document.querySelectorAll('.detail-page').forEach(page => {
                 page.classList.remove('active');
